@@ -26,3 +26,5 @@ output_dir = "dump"
 microservice_dir = "/microservices-demo"
 regenerate_config = true
 # submit trigger
+
+# retrigger after actions enabled
