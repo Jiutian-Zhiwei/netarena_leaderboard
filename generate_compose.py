@@ -132,11 +132,35 @@ def resolve_image(agent: dict, name: str) -> None:
         print(f"Using {name} image: {agent['image']}")
     elif has_id:
         info = fetch_agent_info(agent["agentbeats_id"])
-        agent["image"] = info["docker_image"]
+        image = info.get("docker_image")
+        if not image:
+            # agentbeats 平台已升级到 amber_manifest_url 机制，旧 agent 的
+            # docker_image 为 null。此时从 manifest 里解析 image。
+            manifest_url = info.get("amber_manifest_url")
+            if not manifest_url:
+                print(f"Error: {name} agent has neither docker_image nor amber_manifest_url")
+                sys.exit(1)
+            image = fetch_image_from_manifest(manifest_url)
+        agent["image"] = image
         print(f"Resolved {name} image: {agent['image']}")
     else:
         print(f"Error: {name} must have either 'image' or 'agentbeats_id' field")
         sys.exit(1)
+
+
+def fetch_image_from_manifest(manifest_url: str) -> str:
+    """Fetch an Amber manifest (json5) and extract program.image via regex."""
+    try:
+        response = requests.get(manifest_url, timeout=30)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error: Failed to fetch manifest {manifest_url}: {e}")
+        sys.exit(1)
+    m = re.search(r'image:\s*"([^"]+)"', response.text)
+    if not m:
+        print(f"Error: cannot parse image from manifest {manifest_url}")
+        sys.exit(1)
+    return m.group(1)
 
 
 def parse_scenario(scenario_path: Path) -> dict[str, Any]:
