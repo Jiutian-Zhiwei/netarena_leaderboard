@@ -25,3 +25,4 @@ benchmark_path = "assessment_error_config.json"
 output_dir = "dump"
 microservice_dir = "/microservices-demo"
 regenerate_config = true
+# submit trigger
