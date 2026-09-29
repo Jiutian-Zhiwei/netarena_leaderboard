@@ -28,3 +28,5 @@ regenerate_config = true
 # submit trigger
 
 # retrigger after actions enabled
+
+# retrigger with curl fix
