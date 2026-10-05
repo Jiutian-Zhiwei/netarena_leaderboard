@@ -30,3 +30,5 @@ regenerate_config = true
 # retrigger after actions enabled
 
 # retrigger with curl fix
+
+# retrigger with v2 agent (P0 prompt+postprocess, P1 stateful history) 2026-10-05_1807
